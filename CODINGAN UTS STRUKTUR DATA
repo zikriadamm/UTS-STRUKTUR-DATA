@@ -1,0 +1,205 @@
+#include <iostream>
+using namespace std;
+
+// STRUCT PASIEN
+struct Pasien {
+    int id;
+    string nama;
+    int umur;
+    string keluhan;
+    int prioritas;
+};
+
+// CLASS SISTEM
+class SistemAntrian {
+private:
+    Pasien* data;     // dynamic array
+    int kapasitas;
+    int jumlah;
+    int nextID;
+
+    // resize array
+    void resize() {
+        kapasitas *= 2;
+        Pasien* baru = new Pasien[kapasitas];
+
+        for (int i = 0; i < jumlah; i++) {
+            baru[i] = data[i];
+        }
+
+        delete[] data;
+        data = baru;
+    }
+
+public:
+    SistemAntrian() {
+        kapasitas = 5;
+        jumlah = 0;
+        nextID = 1;
+        data = new Pasien[kapasitas];
+    }
+
+    ~SistemAntrian() {
+        delete[] data;
+    }
+
+    // TAMBAH PASIEN
+    void tambahPasien() {
+        if (jumlah == kapasitas) {
+            resize();
+        }
+
+        Pasien p;
+        p.id = nextID++;
+
+        cout << "Nama: ";
+        cin.ignore();
+        getline(cin, p.nama);
+
+        cout << "Umur: ";
+        cin >> p.umur;
+
+        cout << "Keluhan: ";
+        cin.ignore();
+        getline(cin, p.keluhan);
+
+        cout << "Prioritas (1=tinggi, 2=sedang, 3=rendah): ";
+        cin >> p.prioritas;
+
+        data[jumlah++] = p;
+
+        cout << "Pasien berhasil ditambahkan!\n";
+    }
+
+    // TAMPILKAN
+    void tampilkanPasien() {
+        if (jumlah == 0) {
+            cout << "Data kosong!\n";
+            return;
+        }
+
+        cout << "\n=== DAFTAR PASIEN ===\n";
+        for (int i = 0; i < jumlah; i++) {
+            cout << "ID: " << data[i].id << endl;
+            cout << "Nama: " << data[i].nama << endl;
+            cout << "Umur: " << data[i].umur << endl;
+            cout << "Keluhan: " << data[i].keluhan << endl;
+            cout << "Prioritas: " << data[i].prioritas << endl;
+            cout << "---------------------\n";
+        }
+    }
+
+    // HAPUS
+    void hapusPasien() {
+        int id;
+        cout << "Masukkan ID: ";
+        cin >> id;
+
+        for (int i = 0; i < jumlah; i++) {
+            if (data[i].id == id) {
+                for (int j = i; j < jumlah - 1; j++) {
+                    data[j] = data[j + 1];
+                }
+                jumlah--;
+                // Renumber IDs consecutively from 1
+                for (int k = 0; k < jumlah; k++) {
+                    data[k].id = k + 1;
+                }
+                nextID = jumlah + 1;
+                cout << "Data berhasil dihapus dan ID diupdate!\n";
+                return;
+            }
+        }
+
+        cout << "Data tidak ditemukan!\n";
+    }
+
+    // UPDATE
+    void updatePasien() {
+        int id;
+        cout << "Masukkan ID: ";
+        cin >> id;
+
+        for (int i = 0; i < jumlah; i++) {
+            if (data[i].id == id) {
+                cout << "Nama baru: ";
+                cin.ignore();
+                getline(cin, data[i].nama);
+
+                cout << "Umur baru: ";
+                cin >> data[i].umur;
+
+                cout << "Keluhan baru: ";
+                cin.ignore();
+                getline(cin, data[i].keluhan);
+
+                cout << "Prioritas baru: ";
+                cin >> data[i].prioritas;
+
+                cout << "Data berhasil diupdate!\n";
+                return;
+            }
+        }
+
+        cout << "Data tidak ditemukan!\n";
+    }
+
+    // SORT NAMA (Bubble Sort)
+    void sortNama() {
+        for (int i = 0; i < jumlah - 1; i++) {
+            for (int j = 0; j < jumlah - i - 1; j++) {
+                if (data[j].nama > data[j + 1].nama) {
+                    swap(data[j], data[j + 1]);
+                }
+            }
+        }
+        cout << "Data diurutkan berdasarkan nama!\n";
+        tampilkanPasien();
+    }
+
+    // SORT PRIORITAS
+    void sortPrioritas() {
+        for (int i = 0; i < jumlah - 1; i++) {
+            for (int j = 0; j < jumlah - i - 1; j++) {
+                if (data[j].prioritas > data[j + 1].prioritas) {
+                    swap(data[j], data[j + 1]);
+                }
+            }
+        }
+        cout << "Data diurutkan berdasarkan prioritas!\n";
+        tampilkanPasien();
+    }
+};
+
+// MAIN
+int main() {
+    SistemAntrian sistem;
+    int pilih;
+
+    do {
+        cout << "\n=== SISTEM ANTRIAN RS ===\n";
+        cout << "1. Tambah\n";
+        cout << "2. Tampilkan\n";
+        cout << "3. Hapus\n";
+        cout << "4. Update\n";
+        cout << "5. Sort Nama\n";
+        cout << "6. Sort Prioritas\n";
+        cout << "0. Keluar\n";
+        cout << "Pilih: ";
+        cin >> pilih;
+
+        switch (pilih) {
+            case 1: sistem.tambahPasien(); break;
+            case 2: sistem.tampilkanPasien(); break;
+            case 3: sistem.hapusPasien(); break;
+            case 4: sistem.updatePasien(); break;
+            case 5: sistem.sortNama(); break;
+            case 6: sistem.sortPrioritas(); break;
+            case 0: cout << "Keluar...\n"; break;
+            default: cout << "Pilih salah!\n";
+        }
+
+    } while (pilih != 0);
+
+    return 0;
+}
