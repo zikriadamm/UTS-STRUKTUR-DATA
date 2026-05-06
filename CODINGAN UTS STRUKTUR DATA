@@ -1,4 +1,6 @@
 #include <iostream>
+#include <string>
+#include <algorithm>
 using namespace std;
 
 // STRUCT PASIEN
@@ -50,7 +52,6 @@ public:
         }
 
         Pasien p;
-        p.id = nextID++;
 
         cout << "Nama: ";
         cin.ignore();
@@ -66,9 +67,24 @@ public:
         cout << "Prioritas (1=tinggi, 2=sedang, 3=rendah): ";
         cin >> p.prioritas;
 
-        data[jumlah++] = p;
+        // Ringkasan
+        cout << "\n=== RINGKASAN ===" << endl;
+        cout << "ID: " << nextID << endl;
+        cout << "Nama: " << p.nama << endl;
+        cout << "Umur: " << p.umur << endl;
+        cout << "Keluhan: " << p.keluhan << endl;
+        cout << "Prioritas: " << p.prioritas << endl;
+        cout << "Simpan? (y/n): ";
+        char konfirm;
+        cin >> konfirm;
 
-        cout << "Pasien berhasil ditambahkan!\n";
+        if (konfirm == 'y' || konfirm == 'Y') {
+            p.id = nextID++;
+            data[jumlah++] = p;
+            cout << "Pasien berhasil ditambahkan!\n";
+        } else {
+            cout << "Ditambahkan dibatalkan. Kembali ke menu.\n";
+        }
     }
 
     // TAMPILKAN
@@ -89,7 +105,7 @@ public:
         }
     }
 
-    // HAPUS
+    // HAPUS (dengan konfirmasi y/n)
     void hapusPasien() {
         int id;
         cout << "Masukkan ID: ";
@@ -97,16 +113,35 @@ public:
 
         for (int i = 0; i < jumlah; i++) {
             if (data[i].id == id) {
-                for (int j = i; j < jumlah - 1; j++) {
-                    data[j] = data[j + 1];
+                // Tampilkan data pasien sebelum dihapus
+                cout << "\nData pasien yang akan dihapus:" << endl;
+                cout << "ID: " << data[i].id << endl;
+                cout << "Nama: " << data[i].nama << endl;
+                cout << "Umur: " << data[i].umur << endl;
+                cout << "Keluhan: " << data[i].keluhan << endl;
+                cout << "Prioritas: " << data[i].prioritas << endl;
+
+                cout << "\nKonfirmasi hapus pasien dengan ID " << id << "? (y/n): ";
+                char konfirm;
+                cin >> konfirm;
+
+                if (konfirm == 'y' || konfirm == 'Y') {
+                    for (int j = i; j < jumlah - 1; j++) {
+                        data[j] = data[j + 1];
+                    }
+                    jumlah--;
+
+                    // Renumber IDs consecutively from 1
+                    for (int k = 0; k < jumlah; k++) {
+                        data[k].id = k + 1;
+                    }
+                    nextID = jumlah + 1;
+
+                    cout << "Data berhasil dihapus dan ID diupdate!\n";
+                } else {
+                    cout << "Penghapusan dibatalkan.\n";
                 }
-                jumlah--;
-                // Renumber IDs consecutively from 1
-                for (int k = 0; k < jumlah; k++) {
-                    data[k].id = k + 1;
-                }
-                nextID = jumlah + 1;
-                cout << "Data berhasil dihapus dan ID diupdate!\n";
+
                 return;
             }
         }
@@ -122,6 +157,20 @@ public:
 
         for (int i = 0; i < jumlah; i++) {
             if (data[i].id == id) {
+                // Show current
+                cout << "\nData saat ini:" << endl;
+                cout << "Nama: " << data[i].nama << endl;
+                cout << "Umur: " << data[i].umur << endl;
+                cout << "Keluhan: " << data[i].keluhan << endl;
+                cout << "Prioritas: " << data[i].prioritas << endl;
+                cout << "Edit? (y/n): ";
+                char konfirm;
+                cin >> konfirm;
+                if (konfirm != 'y' && konfirm != 'Y') {
+                    cout << "Update dibatalkan. Kembali ke menu.\n";
+                    return;
+                }
+
                 cout << "Nama baru: ";
                 cin.ignore();
                 getline(cin, data[i].nama);
@@ -203,3 +252,4 @@ int main() {
 
     return 0;
 }
+
